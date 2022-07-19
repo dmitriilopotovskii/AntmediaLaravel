@@ -3,7 +3,7 @@
 - clone repository
 
 ```
-git clone https://github.com/dmitriilopotovskii/TestWork682021.git
+git clone https://github.com/dmitriilopotovskii/AntmediaLaravel.git
 ```
 
 - install composer dependencies <code>composer install</code>
