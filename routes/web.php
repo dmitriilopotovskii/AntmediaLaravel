@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [UserStreamController::class, 'index'])->name('dashboard');
     Route::get('/stream/create', [UserStreamController::class, 'create'])->name('create');
-    Route::get('/stream/{id}', [UserStreamController::class, 'show'])->name('show');
+    Route::get('/stream/{stream}', [UserStreamController::class, 'show'])->name('show');
     Route::post('/stream/', [UserStreamController::class, 'store']);
 }
 );

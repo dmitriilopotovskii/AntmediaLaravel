@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use App\Models\Stream;
+use App\Models\User;
 use Illuminate\Http\Client\Response;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Required;
@@ -11,36 +12,36 @@ use Spatie\LaravelData\Attributes\Validation\Url;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Optional;
 
-/**
- *
- */
 class StreamData extends Data
 {
     /**
+     * @param  int|Optional  $id
      * @param  string  $streamId
      * @param  string  $status
      * @param  string  $type
      * @param  string  $name
      * @param  string  $description
      * @param  string  $rtmpURL
+     * @param  string  $previewURL
+     * @param  UserData|Optional  $user
      */
     public function __construct(
         public int|Optional $id,
         #[Required, StringType]
-        public string $streamId,
+        public readonly string $streamId,
         #[Required, StringType]
-        public string $status,
+        public readonly string $status,
         #[Required, StringType]
-        public string $type,
+        public readonly string $type,
         #[Required, StringType]
-        public string $name,
+        public readonly string $name,
         #[Required, StringType, Max(50)]
-        public string $description,
+        public readonly string $description,
         #[Required, StringType]
-        public string $rtmpURL,
+        public readonly string $rtmpURL,
         #[Required, Url]
-        public string $previewURL,
-        public readonly int|Optional $user_id
+        public readonly string $previewURL,
+        public readonly UserData|Optional $user
 
     ) {
     }
@@ -50,7 +51,7 @@ class StreamData extends Data
      * @return static
      */
     public static function fromResponseFabric(Response $response, $previewURL): static
-    {
+    {       //dd($response->collect());
         $collect = $response->collect();
 
         return new self(
@@ -67,6 +68,12 @@ class StreamData extends Data
         );
     }
 
+    /**
+     * @param  Response  $response
+     * @param $previewURL
+     * @param $user
+     * @return static
+     */
     public static function fromResponse(Response $response, $previewURL, $user): static
     {
         $collect = $response->collect();
@@ -80,7 +87,7 @@ class StreamData extends Data
             $collect['description'],
             $collect['rtmpURL'],
             $previewURL,
-            $user
+            UserData::from($user)
 
         );
     }
@@ -100,7 +107,7 @@ class StreamData extends Data
             $stream->description,
             $stream->rtmpURL,
             $stream->previewURL,
-            $stream->user_id
+            UserData::from((new User())->find($stream->user_id))
         );
     }
 }

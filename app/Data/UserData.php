@@ -2,23 +2,23 @@
 
 namespace App\Data;
 
-use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\StringType;
 use Spatie\LaravelData\Data;
 
-class StreamRequestData extends Data
+class UserData extends Data
 {
     /**
+     * @param  int  $id
      * @param  string  $name
-     * @param  string  $description
+     * @param  string  $email
      */
     public function __construct(
-
+        public readonly int $id,
         #[Required, StringType]
-        public string $name,
-        #[Required, StringType, Max(50)]
-        public string $description,
+        public readonly string $name,
+        #[Required, StringType]
+        public readonly string $email,
 
     ) {
     }

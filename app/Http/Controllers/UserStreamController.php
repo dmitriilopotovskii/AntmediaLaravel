@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Data\StreamData;
 use App\Data\StreamRequestData;
 use App\Models\Stream;
-use Auth;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -22,20 +21,21 @@ class UserStreamController extends Controller
                 'description',
             ])->
             with('user:id,email,name')->paginate(6);
+        $streamData = StreamData::collection($streams);
 
-        return view('dashboard', ['streams' => $streams]);
+        return view('dashboard', ['streams' => $streamData->items()]);
     }
 
     /**
      * @param  Stream  $stream
      * @return Application|Factory|View
      */
-    public function show($id)
+    public function show(Stream $stream)
     {
-        $stream = Stream::findOrFail($id);
         $stream->getStatus();
+        $streamData = StreamData::fromModel($stream);
 
-        return view('stream', ['stream' => $stream]);
+        return view('stream', ['stream' => $streamData]);
     }
 
     public function create()
@@ -50,10 +50,18 @@ class UserStreamController extends Controller
     public function store(Request $request)
     {
         $StreamRequest = StreamRequestData::from($request);
+
         $response = Http::post(env('DOCKER_HOST').env('ANT_REST_URL').'v2/broadcasts/create',
             $StreamRequest->all());
-        $streamData = StreamData::fromResponse($response, $request->previewURL, Auth::user()->id);
-        $model = Stream::firstOrCreate($streamData->all());
-        return redirect()->route('show',['id' => $model->id]);
+
+        $streamData = StreamData::fromResponse($response, $request->previewURL, $request->user());
+
+        $model = Stream::updateOrCreate(
+            [
+                ...$streamData->except('user')->all(),
+                'user_id' => $streamData->user->id,
+            ]);
+
+        return redirect()->route('show', ['stream' => $model->id]);
     }
 }

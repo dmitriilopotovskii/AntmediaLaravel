@@ -20,10 +20,8 @@ class StreamFactory extends Factory
     public function definition()
     {
         $StreamRequest = new StreamRequestData(
-            'liveStream',
             ''.$this->faker->word,
-            ''.$this->faker->text(50),
-            true,
+            ''.$this->faker->text(50)
         );
 
         $response = Http::post(env('DOCKER_HOST').env('ANT_REST_URL').'v2/broadcasts/create',
