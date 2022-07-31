@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Http;
 
 class UserStreamController extends Controller
 {
-    public function index()
+    /**
+     * @return Factory|View|Application
+     */
+    public function index(): Factory|View|Application
     {
         $streams = Stream::query()
             ->select([
@@ -30,10 +33,10 @@ class UserStreamController extends Controller
      * @param  Stream  $stream
      * @return Application|Factory|View
      */
-    public function show(Stream $stream)
+    public function show(Stream $stream): View|Factory|Application
     {
         $stream->getStatus();
-        $streamData = StreamData::fromModel($stream);
+        $streamData = StreamData::from($stream);
 
         return view('stream', ['stream' => $streamData]);
     }
@@ -52,7 +55,7 @@ class UserStreamController extends Controller
         $StreamRequest = StreamRequestData::from($request);
 
         $response = Http::post(env('DOCKER_HOST').env('ANT_REST_URL').'v2/broadcasts/create',
-            $StreamRequest->all());
+            $StreamRequest->except('previewURL')->all());
 
         $streamData = StreamData::fromResponse($response, $request->previewURL, $request->user());
 

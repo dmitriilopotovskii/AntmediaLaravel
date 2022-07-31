@@ -14,19 +14,9 @@ use Spatie\LaravelData\Optional;
 
 class StreamData extends Data
 {
-    /**
-     * @param  int|Optional  $id
-     * @param  string  $streamId
-     * @param  string  $status
-     * @param  string  $type
-     * @param  string  $name
-     * @param  string  $description
-     * @param  string  $rtmpURL
-     * @param  string  $previewURL
-     * @param  UserData|Optional  $user
-     */
+
     public function __construct(
-        public int|Optional $id,
+        public readonly int|Optional $id,
         #[Required, StringType]
         public readonly string $streamId,
         #[Required, StringType]
@@ -37,7 +27,7 @@ class StreamData extends Data
         public readonly string $name,
         #[Required, StringType, Max(50)]
         public readonly string $description,
-        #[Required, StringType]
+        #[Required, StringType,Url]
         public readonly string $rtmpURL,
         #[Required, Url]
         public readonly string $previewURL,
